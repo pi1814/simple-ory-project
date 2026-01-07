@@ -32,6 +32,7 @@ const Login: NextPage = () => {
   const [hasSession, setHasSession] = useState<boolean>(false);
 
   const router = useRouter();
+  const redirectURI = router.asPath
   const {
     return_to: returnTo,
     flow: flowId,
@@ -261,13 +262,16 @@ const Login: NextPage = () => {
       );
 
   const getRegistrationUrl = () => {
+    const loginChallenge = login_challenge
+      ? login_challenge.toString()
+      : undefined;
     const initRegistrationQuery = new URLSearchParams({
-      return_to: (return_to && return_to.toString()) || flow?.return_to || "",
+      return_to: (redirectURI) && redirectURI.toString(),
       ...(flow?.identity_schema && {
         identity_schema: flow.identity_schema.toString(),
       }),
-      ...(flow?.oauth2_login_request?.challenge && {
-        login_challenge: flow.oauth2_login_request.challenge,
+      ...(loginChallenge && {
+        login_challenge: loginChallenge,
       }),
     });
 
