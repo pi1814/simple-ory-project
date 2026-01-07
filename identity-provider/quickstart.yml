@@ -5,9 +5,9 @@
 services:
   ### KRATOS ###
   kratos-migrate:
-    image: oryd/kratos:v1.1.0
+    image: oryd/kratos:latest
     environment:
-      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true&mode=rwc
+      - DSN=memory
     volumes:
       - type: volume
         source: kratos-sqlite
@@ -49,13 +49,13 @@ services:
   kratos:
     depends_on:
       - kratos-migrate
-    image: oryd/kratos:v1.1.0
+    image: oryd/kratos:latest
     ports:
       - "4433:4433" # public
       - "4434:4434" # admin
     restart: unless-stopped
     environment:
-      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true
+      - DSN=memory
       - LOG_LEVEL=trace
     command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
     volumes:
@@ -79,7 +79,7 @@ services:
   ### HYDRA ###
 
   hydra:
-    image: oryd/hydra:v2.2.0
+    image: oryd/hydra:latest
     ports:
       - "4444:4444" # Public port
       - "4445:4445" # Admin port
@@ -93,16 +93,16 @@ services:
         source: ./config
         target: /etc/config/hydra
     environment:
-      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true
+      - DSN=memory
     restart: unless-stopped
     depends_on:
       - hydra-migrate
     networks:
       - intranet
   hydra-migrate:
-    image: oryd/hydra:v2.2.0
+    image: oryd/hydra:latest
     environment:
-      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true
+      - DSN=memory
     command: migrate -c /etc/config/hydra/hydra.yml sql -e --yes
     volumes:
       - type: volume
